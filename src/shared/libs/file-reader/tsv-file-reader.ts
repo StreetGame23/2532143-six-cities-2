@@ -1,24 +1,39 @@
-import { readFileSync } from 'node:fs';
-import { Offer, OfferType } from './offer.js';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { FileReader } from './file-reader.interface.js';
+import { Offer, OfferType } from '../../types/offer.type.js';
+import { OFFER_TSV_COLUMN_COUNT, OfferTSVRawFields } from '../../types/tsv-file-reader.js';
 
-export class TSVFileReader {
+export class TSVFileReader implements FileReader {
   private rawData = '';
 
-  constructor(private readonly filePath: string) {}
+  constructor(
+    private readonly filename: string
+  ) {}
 
   public read(): void {
-    this.rawData = readFileSync(this.filePath, { encoding: 'utf-8' });
+    this.rawData = readFileSync(this.filename, { encoding: 'utf-8' });
   }
 
-  public toObject(): Offer[] {
+  public toArray(): Offer[] {
+    if (!this.rawData) {
+      throw new Error('File was not read');
+    }
+
     return this.rawData
       .trim()
       .split('\n')
+      .filter((row) => row.trim().length > 0)
       .map((line) => this.parseOffer(line));
   }
 
   private parseOffer(line: string): Offer {
+    const fields = line.split('\t') as OfferTSVRawFields;
+
+    if (fields.length !== OFFER_TSV_COLUMN_COUNT) {
+      throw new Error(`Invalid TSV row: expected ${OFFER_TSV_COLUMN_COUNT} columns, got ${fields.length}`);
+    }
+
     const [
       title,
       description,
@@ -36,7 +51,7 @@ export class TSVFileReader {
       goodsRaw,
       hostRaw,
       locationRaw,
-    ] = line.split('\t');
+    ] = fields;
 
     const location = JSON.parse(locationRaw);
 
