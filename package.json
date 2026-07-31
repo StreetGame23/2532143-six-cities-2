@@ -37,6 +37,7 @@
     "npm": ">=8"
   },
   "dependencies": {
+    "dayjs": "1.11.10",
     "glob": "13.0.6",
     "json-server": "0.17.4"
   }
