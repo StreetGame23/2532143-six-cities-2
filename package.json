@@ -15,7 +15,8 @@
     "compile": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
     "ts": "ts-node",
-    "mock:server": "json-server ./mocks/mock-server-data.json --port 3123"
+    "mock:server": "json-server ./mocks/mock-server-data.json --port 3123",
+    "cli": "node --no-warnings --loader ts-node/esm ./src/main.cli.ts"
   },
   "devDependencies": {
     "@types/node": "18.17.17",
@@ -37,6 +38,6 @@
   },
   "dependencies": {
     "glob": "13.0.6",
-    "json-server": "1.0.0-beta.15"
+    "json-server": "0.17.4"
   }
 }

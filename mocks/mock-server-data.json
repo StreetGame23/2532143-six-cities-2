@@ -1,0 +1,86 @@
+{
+    "api": {
+        "types": [
+            "appartment",
+            "room",
+            "house",
+            "hotel"
+        ],
+        "titles": [
+            "Beautiful & luxurious studio at great location",
+            "Modern apartment with great views",
+            "Stylish & luxurious apartment",
+            "Cozy & comfortable apartment",
+            "Beautiful & luxurious apartment with great views"
+        ],
+        "descriptions": [
+            "This is a beautiful and luxurious studio at a great location. It is perfect for a couple or a small family. The apartment is stylish and comfortable, with a great view of the city.",
+            "This is a modern apartment with great views. It is perfect for a couple or a small family. The apartment is stylish and comfortable, with a great view of the city.",
+            "This is a stylish and luxurious apartment. It is perfect for a couple or a small family. The apartment is stylish and comfortable, with a great view of the city.",
+            "This is a cozy and comfortable apartment. It is perfect for a couple or a small family. The apartment is stylish and comfortable, with a great view of the city.",
+            "This is a beautiful and luxurious apartment with great views. It is perfect for a couple or a small family. The apartment is stylish and comfortable, with a great view of the city."
+        ],
+        "cities": [
+            "Paris",
+            "Cologne",
+            "Brussels",
+            "Amsterdam",
+            "Hamburg",
+            "Dusseldorf"
+        ],
+        "previewImages": [
+            "https://url-to-image/image1.png",
+            "https://url-to-image/image2.png",
+            "https://url-to-image/image3.png",
+            "https://url-to-image/image4.png",
+            "https://url-to-image/image5.png"
+        ],
+        "isFavorite": [
+            true,
+            false
+        ],
+        "isPremium": [
+            true,
+            false
+        ],
+        "ratings": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ],
+        "images": [
+            "https://url-to-image/image1.png",
+            "https://url-to-image/image2.png",
+            "https://url-to-image/image3.png",
+            "https://url-to-image/image4.png",
+            "https://url-to-image/image5.png"
+        ],
+        "prices": [
+            100,
+            110,
+            120,
+            220,
+            330
+        ],
+        "bedrooms": [
+            1,
+            2,
+            3
+        ],
+        "goods": [
+            "Wifi",
+            "Heating",
+            "Kitchen",
+            "Cable TV"
+        ],
+        "maxAdults": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ]
+    }
+}
