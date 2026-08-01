@@ -1,7 +1,5 @@
 
 import { FileReader } from './file-reader.interface.js';
-import { createOffer } from '../../helpers/index.js';
-import { Offer } from '../../types/offer.type.js';
 import { EventEmitter } from 'node:events';
 import { createReadStream } from 'node:fs';
 
