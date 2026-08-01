@@ -9,7 +9,7 @@ async function bootstrap() {
   const cliApplication = new CLIApplication();
   const currentDir = dirname(fileURLToPath(import.meta.url));
 
-  const importedCommands: Command[] = []
+  const importedCommands: Command[] = [];
   const files = glob.sync('cli/commands/*.command.{js,ts}', { cwd: currentDir });
 
   for (const file of files) {

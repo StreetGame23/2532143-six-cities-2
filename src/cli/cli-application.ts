@@ -16,11 +16,11 @@ export class CLIApplication {
         throw new Error(`Command ${command.getName()} is already registered`);
       }
       this.commands[command.getName()] = command;
-    })
+    });
   }
 
   public getCommand(commandName: string): Command {
-    return this.commands[commandName] ?? this.getDefaultCommand()
+    return this.commands[commandName] ?? this.getDefaultCommand();
   }
 
   public getDefaultCommand(): Command | never {
@@ -37,5 +37,5 @@ export class CLIApplication {
     const commandArguments = parsedCommand[commandName] ?? [];
     command.execute(...commandArguments);
   }
-  
+
 }
