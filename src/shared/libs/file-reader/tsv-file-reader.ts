@@ -1,81 +1,39 @@
-import { randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+
 import { FileReader } from './file-reader.interface.js';
-import { Offer, OfferType } from '../../types/offer.type.js';
-import { OFFER_TSV_COLUMN_COUNT, OfferTSVRawFields } from '../../types/tsv-file-reader.js';
+import { createOffer } from '../../helpers/index.js';
+import { Offer } from '../../types/offer.type.js';
+import { EventEmitter } from 'node:events';
+import { createReadStream } from 'node:fs';
 
-export class TSVFileReader implements FileReader {
-  private rawData = '';
+const CHUNK_SIZE = 16384;
 
-  constructor(
-    private readonly filename: string
-  ) {}
-
-  public read(): void {
-    this.rawData = readFileSync(this.filename, { encoding: 'utf-8' });
+export class TSVFileReader extends EventEmitter implements FileReader {
+  constructor(private readonly filename: string) {
+    super();
   }
 
-  public toArray(): Offer[] {
-    if (!this.rawData) {
-      throw new Error('File was not read');
+  public async read(): Promise<void> {
+    const readStream = createReadStream(this.filename, {
+      highWaterMark: CHUNK_SIZE,
+      encoding: 'utf-8',
+    });
+
+    let remainingData = '';
+    let nextLinePosition = -1;
+    let importedRowCount = 0;
+
+    for await (const chunk of readStream) {
+      remainingData += chunk.toString();
+
+      while ((nextLinePosition = remainingData.indexOf('\n')) >= 0) {
+        const completeRow = remainingData.slice(0, nextLinePosition + 1);
+        remainingData = remainingData.slice(++nextLinePosition);
+        importedRowCount++;
+
+        this.emit('line', completeRow);
+      }
     }
 
-    return this.rawData
-      .trim()
-      .split('\n')
-      .filter((row) => row.trim().length > 0)
-      .map((line) => this.parseOffer(line));
-  }
-
-  private parseOffer(line: string): Offer {
-    const fields = line.split('\t') as OfferTSVRawFields;
-
-    if (fields.length !== OFFER_TSV_COLUMN_COUNT) {
-      throw new Error(`Invalid TSV row: expected ${OFFER_TSV_COLUMN_COUNT} columns, got ${fields.length}`);
-    }
-
-    const [
-      title,
-      description,
-      publicationDate,
-      cityName,
-      previewImage,
-      imagesRaw,
-      isPremiumRaw,
-      isFavoriteRaw,
-      ratingRaw,
-      typeRaw,
-      bedroomsRaw,
-      maxAdultsRaw,
-      priceRaw,
-      goodsRaw,
-      hostRaw,
-      locationRaw,
-    ] = fields;
-
-    const location = JSON.parse(locationRaw);
-
-    return {
-      id: randomUUID(),
-      title,
-      description,
-      publicationDate,
-      city: {
-        name: cityName,
-        location,
-      },
-      previewImage,
-      images: imagesRaw.split(','),
-      isPremium: isPremiumRaw === 'true',
-      isFavorite: isFavoriteRaw === 'true',
-      rating: Number.parseInt(ratingRaw, 10),
-      type: typeRaw as OfferType,
-      bedrooms: Number.parseInt(bedroomsRaw, 10),
-      maxAdults: Number.parseInt(maxAdultsRaw, 10),
-      price: Number.parseInt(priceRaw, 10),
-      goods: goodsRaw.split(','),
-      host: JSON.parse(hostRaw),
-      location,
-    };
+    this.emit('end', importedRowCount);
   }
 }
