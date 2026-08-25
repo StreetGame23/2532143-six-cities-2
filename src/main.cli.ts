@@ -28,6 +28,7 @@ async function bootstrap() {
   }
   cliApplication.registerCommands(importedCommands);
   cliApplication.processCommand(process.argv);
+
 }
 
 bootstrap();
