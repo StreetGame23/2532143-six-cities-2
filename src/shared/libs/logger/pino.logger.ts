@@ -9,11 +9,11 @@ export class PinoLogger implements Logger {
   private readonly logger: PinoInstance;
 
   constructor() {
-     const modulePath = getCurrentModuleDirectoryPath();
-     const logFilePath = 'logs/rest.log';
-     const destination = resolve(modulePath, '../../../', logFilePath);
+    const modulePath = getCurrentModuleDirectoryPath();
+    const logFilePath = 'logs/rest.log';
+    const destination = resolve(modulePath, '../../../', logFilePath);
 
-     const multiTransport = transport({
+    const multiTransport = transport({
       targets: [
         {
           target: 'pino/file',
@@ -28,8 +28,8 @@ export class PinoLogger implements Logger {
       ],
     });
 
-     this.logger = pino({}, multiTransport);
-     this.logger.info('Logger created...');
+    this.logger = pino({}, multiTransport);
+    this.logger.info('Logger created...');
   }
 
   public debug(message: string, ...args: unknown[]): void {
