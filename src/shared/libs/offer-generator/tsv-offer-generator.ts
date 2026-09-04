@@ -17,6 +17,7 @@ const CITY_LOCATIONS: Record<string, Location> = {
 
 const DEFAULT_HOST = {
   name: 'Oliver Conner',
+  email: 'oliver.conner@six-cities.local',
   avatarUrl: 'https://url-to-image/avatar.png',
   isPro: false,
 };

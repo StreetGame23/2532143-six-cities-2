@@ -11,7 +11,7 @@ export class HelpCommand implements Command {
 Доступные команды:
   ${chalk.yellow('--help     — выводит информацию о списке команд')}
   ${chalk.green('--version  — выводит версию приложения')}
-  ${chalk.blue('--import   — импортирует данные из TSV-файла')}
+  ${chalk.blue('--import <path> [-] [-] <host> <dbname> <salt> — импорт TSV в MongoDB (для локальной БД без auth: - -)')}
   ${chalk.cyan('--generate — генерирует произвольное количество тестовых данных')}
 `);
   }

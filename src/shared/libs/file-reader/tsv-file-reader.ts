@@ -1,4 +1,3 @@
-
 import { FileReader } from './file-reader.interface.js';
 import { EventEmitter } from 'node:events';
 import { createReadStream } from 'node:fs';
@@ -28,7 +27,9 @@ export class TSVFileReader extends EventEmitter implements FileReader {
         remainingData = remainingData.slice(++nextLinePosition);
         importedRowCount++;
 
-        this.emit('line', completeRow);
+        await new Promise((resolve) => {
+          this.emit('line', completeRow, resolve);
+        });
       }
     }
 
