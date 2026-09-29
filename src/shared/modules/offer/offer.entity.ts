@@ -75,6 +75,9 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ ref: UserEntity, required: true })
   public hostId!: Ref<UserEntity>;
 
+  @prop({ required: true, default: 0 })
+  public commentCount!: number;
+
   @prop({ type: () => LocationType, required: true, _id: false })
   public location!: Location;
 }
