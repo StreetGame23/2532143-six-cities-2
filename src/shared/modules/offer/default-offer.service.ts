@@ -6,13 +6,15 @@ import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { OfferService } from './offer-service.interface.js';
 import { OfferEntity } from './offer.entity.js';
-import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
+import { DEFAULT_OFFER_COUNT, DEFAULT_PREMIUM_OFFER_COUNT } from './offer.constant.js';
+import { CommentEntity } from '../comment/comment.entity.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
-    @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>
+    @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
+    @inject(Component.CommentModel) private readonly commentModel: types.ModelType<CommentEntity>
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
@@ -23,19 +25,28 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async findById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findById(offerId)
+    return this.offerModel
+      .findById(offerId)
       .populate(['hostId'])
       .exec();
   }
 
-  public async find(): Promise<DocumentType<OfferEntity>[]> {
+  public async find(count?: number): Promise<DocumentType<OfferEntity>[]> {
+    const limit = count ?? DEFAULT_OFFER_COUNT;
+
     return this.offerModel
       .find()
+      .sort({ publicationDate: SortType.Down })
+      .limit(limit)
       .populate(['hostId'])
       .exec();
   }
 
   public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
+    await this.commentModel
+      .deleteMany({ offerId })
+      .exec();
+
     return this.offerModel
       .findByIdAndDelete(offerId)
       .exec();
@@ -50,8 +61,28 @@ export class DefaultOfferService implements OfferService {
 
   public async findByCityName(city: string, count?: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
+
     return this.offerModel
-      .find({ city }, {}, { limit })
+      .find({ city })
+      .sort({ publicationDate: SortType.Down })
+      .limit(limit)
+      .populate(['hostId'])
+      .exec();
+  }
+
+  public async findPremiumByCityName(city: string): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel
+      .find({ city, isPremium: true })
+      .sort({ publicationDate: SortType.Down })
+      .limit(DEFAULT_PREMIUM_OFFER_COUNT)
+      .populate(['hostId'])
+      .exec();
+  }
+
+  public async findFavoriteByIds(offerIds: string[]): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel
+      .find({ _id: { $in: offerIds } })
+      .sort({ publicationDate: SortType.Down })
       .populate(['hostId'])
       .exec();
   }
@@ -70,21 +101,9 @@ export class DefaultOfferService implements OfferService {
       }).exec();
   }
 
-  public async findNew(count: number): Promise<DocumentType<OfferEntity>[]> {
+  public async updateRating(offerId: string, rating: number): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
-      .find()
-      .sort({ createdAt: SortType.Down })
-      .limit(count)
-      .populate(['hostId'])
-      .exec();
-  }
-
-  public async findDiscussed(count: number): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel
-      .find()
-      .sort({ commentCount: SortType.Down })
-      .limit(count)
-      .populate(['hostId'])
+      .findByIdAndUpdate(offerId, { rating }, { new: true })
       .exec();
   }
 }

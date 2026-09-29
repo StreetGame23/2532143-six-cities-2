@@ -7,9 +7,9 @@ import { createOfferContainer } from './shared/modules/offer/index.js';
 import { createCommentContainer } from './shared/modules/comment/index.js';
 
 async function bootstrap() {
-  const appContainer = createCommentContainer(
-    createOfferContainer(
-      createUserContainer(
+  const appContainer = createUserContainer(
+    createCommentContainer(
+      createOfferContainer(
         createRestApplicationContainer()
       )
     )

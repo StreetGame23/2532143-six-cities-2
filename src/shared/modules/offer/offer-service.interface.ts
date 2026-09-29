@@ -6,12 +6,13 @@ import { OfferEntity } from './offer.entity.js';
 export interface OfferService {
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
   findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  find(): Promise<DocumentType<OfferEntity>[]>;
+  find(count?: number): Promise<DocumentType<OfferEntity>[]>;
   deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;
   findByCityName(city: string, count?: number): Promise<DocumentType<OfferEntity>[]>;
+  findPremiumByCityName(city: string): Promise<DocumentType<OfferEntity>[]>;
+  findFavoriteByIds(offerIds: string[]): Promise<DocumentType<OfferEntity>[]>;
   incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  findNew(count: number): Promise<DocumentType<OfferEntity>[]>;
-  findDiscussed(count: number): Promise<DocumentType<OfferEntity>[]>;
+  updateRating(offerId: string, rating: number): Promise<DocumentType<OfferEntity> | null>;
   exists(documentId: string): Promise<boolean>;
 }

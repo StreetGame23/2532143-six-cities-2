@@ -14,6 +14,7 @@ import {
   OfferModel,
   OfferService,
 } from '../../shared/modules/offer/index.js';
+import { CommentModel } from '../../shared/modules/comment/index.js';
 import { Offer } from '../../shared/types/index.js';
 
 const DEFAULT_DB_PORT = '27017';
@@ -27,8 +28,8 @@ export class ImportCommand implements Command {
 
   constructor() {
     this.logger = new ConsoleLogger();
-    this.offerService = new DefaultOfferService(this.logger, OfferModel);
-    this.userService = new DefaultUserService(this.logger, UserModel);
+    this.offerService = new DefaultOfferService(this.logger, OfferModel, CommentModel);
+    this.userService = new DefaultUserService(this.logger, UserModel, this.offerService);
     this.databaseClient = new MongoDatabaseClient(this.logger);
   }
 
@@ -62,8 +63,6 @@ export class ImportCommand implements Command {
       previewImage: offer.previewImage,
       images: offer.images,
       isPremium: offer.isPremium,
-      isFavorite: offer.isFavorite,
-      rating: offer.rating,
       type: offer.type,
       bedrooms: offer.bedrooms,
       maxAdults: offer.maxAdults,
