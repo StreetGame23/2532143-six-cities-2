@@ -100,9 +100,9 @@ export class ImportCommand implements Command {
 
     try {
       await fileReader.read();
-    } catch (error) {
-      this.logger.error(`Can't import data from file: ${filename}`);
-      this.logger.error(getErrorMessage(error));
+    } catch (error: unknown) {
+      this.logger.error(`Can't import data from file: ${filename}`, error as Error);
+      this.logger.error(getErrorMessage(error), error as Error);
     }
   }
 }
