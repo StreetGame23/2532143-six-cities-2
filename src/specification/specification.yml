@@ -7,7 +7,7 @@ info:
     name: MIT
     url: https://opensource.org/licenses/MIT
   version: 2.0.0
-  tags:
+tags:
   - name: offers
     description: Действия с объявлениями.
   - name: comments
@@ -22,7 +22,6 @@ paths:
         - users
       summary: Регистрация пользователя
       description: Регистрирует нового пользователя.
-
       requestBody:
         description: Информация для создания нового пользователя.
         content:
@@ -30,7 +29,6 @@ paths:
             schema:
               $ref: '#/components/schemas/createUser'
         required: true
-
       responses:
         "201":
           description: Пользователь зарегистрирован. Объект пользователя.
@@ -38,10 +36,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/user'
-
         "409":
           description: Пользователь с таким email уже существует.
-
 
   /users/login:
     post:
@@ -49,11 +45,32 @@ paths:
         - users
       summary: Авторизация пользователя
       description: Авторизует пользователя на основе логина и пароля
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginUser'
+        required: true
+      responses:
+        "200":
+          description: Пользователь авторизован.
+        "401":
+          description: Неверные логин или пароль.
     get:
       tags:
         - users
       summary: Проверка состояния пользователя
       description: Возвращает информацию по авторизованному пользователю
+      responses:
+        "200":
+          description: Пользователь авторизован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Пользователь не авторизован.
+
   /users/{userId}/avatar:
     post:
       tags:
@@ -61,7 +78,186 @@ paths:
       summary: Загрузить изображение аватара
       description: Загружает изображение аватара пользователя. Изображение
         аватара должно быть в формате `png` или `jpg`.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Аватар загружен.
 
+  /offers:
+    get:
+      tags:
+        - offers
+      summary: Список предложений
+      description: Возвращает список предложений по аренде.
+      parameters:
+        - name: count
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Список предложений.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+    post:
+      tags:
+        - offers
+      summary: Создание предложения
+      description: Создаёт новое предложение по аренде.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+        required: true
+      responses:
+        "201":
+          description: Предложение создано.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+
+  /offers/premium/{city}:
+    get:
+      tags:
+        - offers
+      summary: Премиальные предложения для города
+      description: Возвращает не больше трёх премиальных предложений.
+      parameters:
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Список премиальных предложений.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+
+  /offers/{offerId}:
+    get:
+      tags:
+        - offers
+      summary: Детальная информация о предложении
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Объект предложения.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "404":
+          description: Предложение не найдено.
+    patch:
+      tags:
+        - offers
+      summary: Редактирование предложения
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateOffer'
+        required: true
+      responses:
+        "200":
+          description: Обновлённый объект предложения.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "404":
+          description: Предложение не найдено.
+    delete:
+      tags:
+        - offers
+      summary: Удаление предложения
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Предложение удалено.
+        "404":
+          description: Предложение не найдено.
+
+  /favorites:
+    get:
+      tags:
+        - offers
+      summary: Список избранных предложений
+      responses:
+        "200":
+          description: Список избранных предложений.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+        "401":
+          description: Пользователь не авторизован.
+
+  /favorites/{offerId}:
+    post:
+      tags:
+        - offers
+      summary: Добавить предложение в избранное
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Предложение добавлено в избранное.
+        "401":
+          description: Пользователь не авторизован.
+    delete:
+      tags:
+        - offers
+      summary: Удалить предложение из избранного
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Предложение удалено из избранного.
+        "401":
+          description: Пользователь не авторизован.
 
 components:
   schemas:
@@ -88,6 +284,19 @@ components:
           type: string
           example: "123456"
 
+    loginUser:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: oliver.conner@example.com
+        password:
+          type: string
+          example: "123456"
+
     user:
       type: object
       properties:
@@ -106,3 +315,132 @@ components:
         isPro:
           type: boolean
           example: false
+
+    createOffer:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        publicationDate:
+          type: string
+          format: date-time
+        city:
+          type: string
+          example: Amsterdam
+        previewImage:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        isPremium:
+          type: boolean
+        type:
+          type: string
+          example: apartment
+        bedrooms:
+          type: integer
+        maxAdults:
+          type: integer
+        price:
+          type: integer
+        goods:
+          type: array
+          items:
+            type: string
+        hostId:
+          type: string
+        location:
+          $ref: '#/components/schemas/location'
+
+    updateOffer:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        publicationDate:
+          type: string
+          format: date-time
+        city:
+          type: string
+        previewImage:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        isPremium:
+          type: boolean
+        type:
+          type: string
+        bedrooms:
+          type: integer
+        maxAdults:
+          type: integer
+        price:
+          type: integer
+        goods:
+          type: array
+          items:
+            type: string
+        location:
+          $ref: '#/components/schemas/location'
+
+    offer:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        publicationDate:
+          type: string
+          format: date-time
+        city:
+          type: string
+        previewImage:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+        type:
+          type: string
+        bedrooms:
+          type: integer
+        maxAdults:
+          type: integer
+        price:
+          type: integer
+        goods:
+          type: array
+          items:
+            type: string
+        hostId:
+          type: string
+        commentCount:
+          type: integer
+        location:
+          $ref: '#/components/schemas/location'
+
+    location:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+        zoom:
+          type: integer

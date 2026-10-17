@@ -6,3 +6,4 @@ export { DefaultOfferService } from './default-offer.service.js';
 export { createOfferContainer } from './offer.container.js';
 export { DEFAULT_OFFER_COUNT, DEFAULT_PREMIUM_OFFER_COUNT } from './offer.constant.js';
 export { OfferController } from './offer.controller.js';
+export { FavoriteController } from './favorite.controller.js';

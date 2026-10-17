@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BaseController, HttpError, HttpMethod } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
@@ -23,6 +23,8 @@ export class UserController extends BaseController {
 
     this.addRoute({ path: '/register', method: HttpMethod.Post, handler: this.create });
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
+    this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.checkAuthenticate });
+    this.addRoute({ path: '/:userId/avatar', method: HttpMethod.Post, handler: this.uploadAvatar });
   }
 
   public async create(
@@ -53,6 +55,38 @@ export class UserController extends BaseController {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
         `User with email ${body.email} not found.`,
+        'UserController',
+      );
+    }
+
+    throw new HttpError(
+      StatusCodes.NOT_IMPLEMENTED,
+      'Not implemented',
+      'UserController',
+    );
+  }
+
+  public async checkAuthenticate(
+    _req: Request,
+    _res: Response,
+  ): Promise<void> {
+    throw new HttpError(
+      StatusCodes.NOT_IMPLEMENTED,
+      'Not implemented',
+      'UserController',
+    );
+  }
+
+  public async uploadAvatar(
+    { params }: Request,
+    _res: Response,
+  ): Promise<void> {
+    const existsUser = await this.userService.findById(params.userId);
+
+    if (! existsUser) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        `User with id ${params.userId} not found.`,
         'UserController',
       );
     }

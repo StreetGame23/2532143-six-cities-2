@@ -16,6 +16,7 @@ export class RestApplication {
     @inject(Component.Config) private readonly config: Config<RestSchema>,
     @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
     @inject(Component.OfferController) private readonly offerController: Controller,
+    @inject(Component.FavoriteController) private readonly favoriteController: Controller,
     @inject(Component.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilter,
     @inject(Component.UserController) private readonly userController: Controller,
   ) {
@@ -41,6 +42,7 @@ export class RestApplication {
 
   private async _initControllers() {
     this.server.use('/offers', this.offerController.router);
+    this.server.use('/favorites', this.favoriteController.router);
     this.server.use('/users', this.userController.router);
   }
 
