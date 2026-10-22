@@ -11,3 +11,13 @@ export const CITIES = [
 ] as const;
 
 export const OFFER_TYPES = ['apartment', 'house', 'room', 'hotel'] as const;
+
+export const GOODS = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Baby seat',
+  'Washer',
+  'Towels',
+  'Fridge',
+] as const;

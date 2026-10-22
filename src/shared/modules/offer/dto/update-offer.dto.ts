@@ -18,7 +18,7 @@ import { Type } from 'class-transformer';
 import { OfferType } from '../../../types/index.js';
 import { CreateUpdateOfferMessage } from './update-offer.messages.js';
 import { LocationDto } from './location.dto.js';
-import { CITIES, OFFER_TYPES } from '../offer.constant.js';
+import { CITIES, GOODS, OFFER_TYPES } from '../offer.constant.js';
 
 export class UpdateOfferDto {
   @IsOptional()
@@ -78,7 +78,7 @@ export class UpdateOfferDto {
 
   @IsOptional()
   @IsArray({ message: CreateUpdateOfferMessage.goods.invalidFormat })
-  @IsString({ each: true })
+  @IsIn(GOODS, { each: true, message: CreateUpdateOfferMessage.goods.invalidFormat })
   public goods?: string[];
 
   @IsOptional()

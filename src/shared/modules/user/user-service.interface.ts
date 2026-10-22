@@ -3,8 +3,9 @@ import { CreateUserDto } from './dto/create-user.dto.js';
 import { UserEntity } from './user.entity.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { OfferEntity } from '../offer/offer.entity.js';
+import { DocumentExists } from '../../types/index.js';
 
-export interface UserService {
+export interface UserService extends DocumentExists {
   create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>;
   findById(userId: string): Promise<DocumentType<UserEntity> | null>;
   findByEmail(email: string): Promise<DocumentType<UserEntity> | null>;
@@ -13,4 +14,5 @@ export interface UserService {
   addFavorite(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null>;
   removeFavorite(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null>;
   findFavorites(userId: string): Promise<DocumentType<OfferEntity>[]>;
+  exists(documentId: string): Promise<boolean>;
 }

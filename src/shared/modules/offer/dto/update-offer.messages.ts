@@ -42,6 +42,6 @@ export const CreateUpdateOfferMessage = {
     max: 'Maximum price is 100000',
   },
   goods: {
-    invalidFormat: 'goods must be an array',
+    invalidFormat: 'goods must be an array of allowed amenities',
   },
 } as const;

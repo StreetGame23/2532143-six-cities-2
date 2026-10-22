@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import {
   BaseController,
+  DocumentExistsMiddleware,
   HttpError,
   HttpMethod,
   UploadFileMiddleware,
@@ -53,6 +54,7 @@ export class UserController extends BaseController {
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
     });

@@ -42,7 +42,7 @@ export const CreateOfferValidationMessage = {
     maxValue: 'Maximum price is 100000',
   },
   goods: {
-    invalidFormat: 'goods must be an array',
+    invalidFormat: 'goods must be an array of allowed amenities',
   },
   hostId: {
     invalidId: 'hostId must be a valid id',

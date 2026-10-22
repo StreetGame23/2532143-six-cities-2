@@ -18,7 +18,7 @@ import { Type } from 'class-transformer';
 import { OfferType } from '../../../types/index.js';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 import { LocationDto } from './location.dto.js';
-import { CITIES, OFFER_TYPES } from '../offer.constant.js';
+import { CITIES, GOODS, OFFER_TYPES } from '../offer.constant.js';
 
 export class CreateOfferDto {
   @MinLength(10, { message: CreateOfferValidationMessage.title.minLength })
@@ -66,7 +66,7 @@ export class CreateOfferDto {
   public price!: number;
 
   @IsArray({ message: CreateOfferValidationMessage.goods.invalidFormat })
-  @IsString({ each: true })
+  @IsIn(GOODS, { each: true, message: CreateOfferValidationMessage.goods.invalidFormat })
   @ArrayMinSize(1)
   public goods!: string[];
 
