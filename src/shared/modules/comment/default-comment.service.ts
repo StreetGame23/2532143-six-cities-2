@@ -4,7 +4,7 @@ import { Component, SortType } from '../../types/index.js';
 import { DocumentType, types } from '@typegoose/typegoose';
 import { CommentEntity } from './comment.entity.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
-import { OfferService } from '../offer/index.js';
+import { OfferService } from '../offer/offer-service.interface.js';
 import { DEFAULT_COMMENT_COUNT } from './comment.constant.js';
 import { Types } from 'mongoose';
 
