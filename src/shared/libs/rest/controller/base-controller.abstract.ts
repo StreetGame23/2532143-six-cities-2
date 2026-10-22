@@ -6,10 +6,9 @@ import { Controller } from './controller.interface.js';
 import { Logger } from '../../logger/index.js';
 import { Route } from '../types/route.interface.js';
 
-const DEFAULT_CONTENT_TYPE = 'application/json';
-
 @injectable()
 export abstract class BaseController implements Controller {
+  private readonly DEFAULT_CONTENT_TYPE = 'application/json';
   private readonly _router: Router;
 
   constructor(
@@ -30,7 +29,7 @@ export abstract class BaseController implements Controller {
 
   public send<T>(res: Response, statusCode: number, data: T): void {
     res
-      .type(DEFAULT_CONTENT_TYPE)
+      .type(this.DEFAULT_CONTENT_TYPE)
       .status(statusCode)
       .json(data);
   }

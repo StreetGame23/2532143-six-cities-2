@@ -51,7 +51,7 @@ export class OfferController extends BaseController {
   ): Promise<void> {
     const offer = await this.offerService.findById(params.offerId);
 
-    if (! offer) {
+    if (!offer) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
         `Offer with id ${params.offerId} not found.`,
@@ -68,7 +68,7 @@ export class OfferController extends BaseController {
   ): Promise<void> {
     const updatedOffer = await this.offerService.updateById(String(params.offerId), body);
 
-    if (! updatedOffer) {
+    if (!updatedOffer) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
         `Offer with id ${params.offerId} not found.`,
@@ -85,7 +85,7 @@ export class OfferController extends BaseController {
   ): Promise<void> {
     const offer = await this.offerService.deleteById(params.offerId);
 
-    if (! offer) {
+    if (!offer) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
         `Offer with id ${params.offerId} not found.`,
