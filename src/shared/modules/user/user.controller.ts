@@ -54,8 +54,8 @@ export class UserController extends BaseController {
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
-        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
       ]
     });
   }
