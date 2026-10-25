@@ -66,7 +66,9 @@ export class FavoriteController extends BaseController {
       );
     }
 
-    if (!await this.userService.exists(userId)) {
+    const userExists = await this.userService.exists(userId);
+
+    if (!userExists) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
         `User with id ${userId} not found.`,
@@ -83,8 +85,9 @@ export class FavoriteController extends BaseController {
     res: Response,
   ): Promise<void> {
     const { userId } = body as ChangeFavoriteDto;
+    const userExists = await this.userService.exists(userId);
 
-    if (!await this.userService.exists(userId)) {
+    if (!userExists) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
         `User with id ${userId} not found.`,
@@ -102,8 +105,9 @@ export class FavoriteController extends BaseController {
     res: Response,
   ): Promise<void> {
     const { userId } = body as ChangeFavoriteDto;
+    const userExists = await this.userService.exists(userId);
 
-    if (!await this.userService.exists(userId)) {
+    if (!userExists) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
         `User with id ${userId} not found.`,
