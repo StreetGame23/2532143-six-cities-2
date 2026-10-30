@@ -61,6 +61,7 @@
     "got": "13.0.0",
     "http-status-codes": "^2.3.0",
     "inversify": "8.2.3",
+    "jose": "^6.2.14",
     "json-server": "0.17.4",
     "mime-types": "^2.1.35",
     "mongoose": "^8.9.5",

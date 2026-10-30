@@ -6,7 +6,6 @@ import {
   IsDateString,
   IsIn,
   IsInt,
-  IsMongoId,
   IsString,
   Max,
   MaxLength,
@@ -70,7 +69,6 @@ export class CreateOfferDto {
   @ArrayMinSize(1)
   public goods!: string[];
 
-  @IsMongoId({ message: CreateOfferValidationMessage.hostId.invalidId })
   public hostId!: string;
 
   @ValidateNested()
