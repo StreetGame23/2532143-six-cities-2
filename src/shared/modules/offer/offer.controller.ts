@@ -18,13 +18,15 @@ import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { CommentService } from '../comment/comment-service.interface.js';
 import { CommentRdo } from '../comment/rdo/comment.rdo.js';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
+import { UserService } from '../user/user-service.interface.js';
 
 @injectable()
 export class OfferController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.OfferService) private readonly offerService: OfferService,
-    @inject(Component.CommentService) private readonly commentService: CommentService
+    @inject(Component.CommentService) private readonly commentService: CommentService,
+    @inject(Component.UserService) private readonly userService: UserService,
   ) {
     super(logger);
 
@@ -82,13 +84,35 @@ export class OfferController extends BaseController {
     });
   }
 
+  private async getFavoriteIds(userId?: string): Promise<Set<string>> {
+    if (!userId) {
+      return new Set();
+    }
+
+    const user = await this.userService.findById(userId);
+    const favorites = user?.favorites ?? [];
+
+    return new Set(favorites.map((favoriteId) => String(favoriteId)));
+  }
+
+  private markFavorites(offers: OfferRdo[] | OfferRdo, favoriteIds: Set<string>): void {
+    const items = Array.isArray(offers) ? offers : [offers];
+
+    for (const offer of items) {
+      offer.isFavorite = favoriteIds.has(offer.id);
+    }
+  }
+
   public async index(
-    { query }: Request,
+    { query, tokenPayload }: Request,
     res: Response,
   ): Promise<void> {
     const count = query.count ? Number.parseInt(String(query.count), 10) : undefined;
     const offers = await this.offerService.find(count);
-    this.ok(res, fillDTO(OfferRdo, offers));
+    const favoriteIds = await this.getFavoriteIds(tokenPayload?.id);
+    const offersRdo = fillDTO(OfferRdo, offers);
+    this.markFavorites(offersRdo, favoriteIds);
+    this.ok(res, offersRdo);
   }
 
   public async create(
@@ -101,11 +125,14 @@ export class OfferController extends BaseController {
   }
 
   public async show(
-    { params }: Request,
+    { params, tokenPayload }: Request,
     res: Response,
   ): Promise<void> {
     const offer = await this.offerService.findById(params.offerId);
-    this.ok(res, fillDTO(OfferRdo, offer));
+    const favoriteIds = await this.getFavoriteIds(tokenPayload?.id);
+    const offerRdo = fillDTO(OfferRdo, offer);
+    this.markFavorites(offerRdo, favoriteIds);
+    this.ok(res, offerRdo);
   }
 
   public async update(
@@ -125,11 +152,14 @@ export class OfferController extends BaseController {
   }
 
   public async getPremium(
-    { params }: Request,
+    { params, tokenPayload }: Request,
     res: Response,
   ): Promise<void> {
     const offers = await this.offerService.findPremiumByCityName(params.city);
-    this.ok(res, fillDTO(OfferRdo, offers));
+    const favoriteIds = await this.getFavoriteIds(tokenPayload?.id);
+    const offersRdo = fillDTO(OfferRdo, offers);
+    this.markFavorites(offersRdo, favoriteIds);
+    this.ok(res, offersRdo);
   }
 
   public async getComments(

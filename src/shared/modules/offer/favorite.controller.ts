@@ -58,7 +58,14 @@ export class FavoriteController extends BaseController {
     res: Response,
   ): Promise<void> {
     const offers = await this.userService.findFavorites(tokenPayload.id);
-    this.ok(res, fillDTO(OfferRdo, offers));
+    const offersRdo = fillDTO(OfferRdo, offers);
+    const items = Array.isArray(offersRdo) ? offersRdo : [offersRdo];
+
+    for (const offer of items) {
+      offer.isFavorite = true;
+    }
+
+    this.ok(res, offersRdo);
   }
 
   public async create(
@@ -67,7 +74,9 @@ export class FavoriteController extends BaseController {
   ): Promise<void> {
     await this.userService.addFavorite(tokenPayload.id, params.offerId);
     const offer = await this.offerService.findById(params.offerId);
-    this.created(res, fillDTO(OfferRdo, offer));
+    const offerRdo = fillDTO(OfferRdo, offer);
+    offerRdo.isFavorite = true;
+    this.created(res, offerRdo);
   }
 
   public async delete(
