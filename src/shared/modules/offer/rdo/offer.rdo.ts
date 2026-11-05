@@ -1,8 +1,9 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { Location, OfferType } from '../../../types/index.js';
+import { OfferType } from '../../../types/index.js';
 import { UserRdo } from '../../user/rdo/user.rdo.js';
 import { getCityByName } from '../offer.constant.js';
 import { CityRdo } from './city.rdo.js';
+import { LocationRdo } from './location.rdo.js';
 
 export class OfferRdo {
   @Expose()
@@ -60,5 +61,6 @@ export class OfferRdo {
   public commentCount: number;
 
   @Expose()
-  public location: Location;
+  @Type(() => LocationRdo)
+  public location: LocationRdo;
 }

@@ -1,10 +1,11 @@
-import { Expose } from 'class-transformer';
-import { Location } from '../../../types/index.js';
+import { Expose, Type } from 'class-transformer';
+import { LocationRdo } from './location.rdo.js';
 
 export class CityRdo {
   @Expose()
   public name: string;
 
   @Expose()
-  public location: Location;
+  @Type(() => LocationRdo)
+  public location: LocationRdo;
 }

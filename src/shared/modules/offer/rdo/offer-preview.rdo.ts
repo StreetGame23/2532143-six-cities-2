@@ -1,7 +1,8 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { OfferType } from '../../../types/index.js';
 import { getCityByName } from '../offer.constant.js';
 import { CityRdo } from './city.rdo.js';
+import { LocationRdo } from './location.rdo.js';
 
 export class OfferPreviewRdo {
   @Expose()
@@ -38,4 +39,8 @@ export class OfferPreviewRdo {
 
   @Expose()
   public commentCount: number;
+
+  @Expose()
+  @Type(() => LocationRdo)
+  public location: LocationRdo;
 }

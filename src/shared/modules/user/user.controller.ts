@@ -7,6 +7,7 @@ import {
   DocumentExistsMiddleware,
   HttpError,
   HttpMethod,
+  PathTransformer,
   PrivateRouteMiddleware,
   UploadFileMiddleware,
   ValidateDtoMiddleware,
@@ -29,12 +30,13 @@ import { UploadUserAvatarRdo } from './rdo/upload-user-avatar.rdo.js';
 @injectable()
 export class UserController extends BaseController {
   constructor(
-    @inject(Component.Logger) protected readonly logger: Logger,
+    @inject(Component.Logger) logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
     @inject(Component.AuthService) private readonly authService: AuthService,
+    @inject(Component.PathTransformer) pathTransformer: PathTransformer,
   ) {
-    super(logger);
+    super(logger, pathTransformer);
     this.logger.info('Register routes for UserController…');
 
     this.addRoute({

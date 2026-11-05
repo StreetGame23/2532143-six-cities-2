@@ -5,6 +5,7 @@ import {
   BaseController,
   HttpError,
   HttpMethod,
+  PathTransformer,
   PrivateRouteMiddleware,
   ValidateDtoMiddleware,
 } from '../../libs/rest/index.js';
@@ -20,11 +21,12 @@ import { CreateCommentDto } from './dto/create-comment.dto.js';
 @injectable()
 export class CommentController extends BaseController {
   constructor(
-    @inject(Component.Logger) protected readonly logger: Logger,
+    @inject(Component.Logger) logger: Logger,
     @inject(Component.CommentService) private readonly commentService: CommentService,
     @inject(Component.OfferService) private readonly offerService: OfferService,
+    @inject(Component.PathTransformer) pathTransformer: PathTransformer,
   ) {
-    super(logger);
+    super(logger, pathTransformer);
 
     this.logger.info('Register routes for CommentController…');
     this.addRoute({

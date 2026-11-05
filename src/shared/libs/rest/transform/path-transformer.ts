@@ -27,7 +27,15 @@ export class PathTransformer {
     return STATIC_RESOURCE_FIELDS.includes(property);
   }
 
+  private isReadyUrl(value: string) {
+    return value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:');
+  }
+
   private buildPath(value: string) {
+    if (this.isReadyUrl(value)) {
+      return value;
+    }
+
     const staticPath = STATIC_FILES_ROUTE;
     const uploadPath = STATIC_UPLOAD_ROUTE;
     const serverHost = this.config.get('HOST');

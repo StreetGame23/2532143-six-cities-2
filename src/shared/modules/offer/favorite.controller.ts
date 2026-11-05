@@ -4,6 +4,7 @@ import {
   BaseController,
   DocumentExistsMiddleware,
   HttpMethod,
+  PathTransformer,
   PrivateRouteMiddleware,
   ValidateObjectIdMiddleware,
 } from '../../libs/rest/index.js';
@@ -18,11 +19,12 @@ import { OfferPreviewRdo } from './rdo/offer-preview.rdo.js';
 @injectable()
 export class FavoriteController extends BaseController {
   constructor(
-    @inject(Component.Logger) protected readonly logger: Logger,
+    @inject(Component.Logger) logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
     @inject(Component.OfferService) private readonly offerService: OfferService,
+    @inject(Component.PathTransformer) pathTransformer: PathTransformer,
   ) {
-    super(logger);
+    super(logger, pathTransformer);
 
     this.logger.info('Register routes for FavoriteController…');
 
