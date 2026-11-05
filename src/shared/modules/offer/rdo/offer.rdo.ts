@@ -1,8 +1,12 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { Location, OfferType } from '../../../types/index.js';
+import { UserRdo } from '../../user/rdo/user.rdo.js';
+import { getCityByName } from '../offer.constant.js';
+import { CityRdo } from './city.rdo.js';
 
 export class OfferRdo {
   @Expose()
+  @Transform(({ obj }) => obj.id ?? obj._id?.toString())
   public id: string;
 
   @Expose()
@@ -15,7 +19,8 @@ export class OfferRdo {
   public publicationDate: Date;
 
   @Expose()
-  public city: string;
+  @Transform(({ value }) => typeof value === 'string' ? getCityByName(value) : value)
+  public city: CityRdo;
 
   @Expose()
   public previewImage: string;
@@ -47,8 +52,9 @@ export class OfferRdo {
   @Expose()
   public goods: string[];
 
-  @Expose()
-  public hostId: string;
+  @Expose({ name: 'hostId' })
+  @Type(() => UserRdo)
+  public host: UserRdo;
 
   @Expose()
   public commentCount: number;

@@ -38,6 +38,8 @@ paths:
                 $ref: '#/components/schemas/user'
         "409":
           description: Пользователь с таким email уже существует.
+        "403":
+          description: Регистрация доступна только анонимным клиентам.
 
   /users/login:
     post:
@@ -71,6 +73,30 @@ paths:
         "401":
           description: Пользователь не авторизован.
 
+  /comments:
+    post:
+      tags:
+        - comments
+      summary: Добавить комментарий
+      description: Добавляет комментарий к предложению. Доступно только авторизованным клиентам.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createComment'
+        required: true
+      responses:
+        "201":
+          description: Комментарий создан.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+        "401":
+          description: Пользователь не авторизован.
+        "404":
+          description: Предложение не найдено.
+
   /users/{userId}/avatar:
     post:
       tags:
@@ -87,6 +113,10 @@ paths:
       responses:
         "201":
           description: Аватар загружен.
+        "401":
+          description: Пользователь не авторизован.
+        "403":
+          description: Можно загрузить аватар только для своей учётной записи.
 
   /offers:
     get:
@@ -107,7 +137,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/offer'
+                  $ref: '#/components/schemas/offerPreview'
     post:
       tags:
         - offers
@@ -126,6 +156,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/offer'
+        "401":
+          description: Пользователь не авторизован.
 
   /offers/premium/{city}:
     get:
@@ -147,7 +179,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/offer'
+                  $ref: '#/components/schemas/offerPreview'
 
   /offers/{offerId}:
     get:
@@ -192,6 +224,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/offer'
+        "401":
+          description: Пользователь не авторизован.
+        "403":
+          description: Можно редактировать только своё предложение.
         "404":
           description: Предложение не найдено.
     delete:
@@ -207,8 +243,54 @@ paths:
       responses:
         "204":
           description: Предложение удалено.
+        "401":
+          description: Пользователь не авторизован.
+        "403":
+          description: Можно удалять только своё предложение.
         "404":
           description: Предложение не найдено.
+
+  /offers/{offerId}/comments:
+    get:
+      tags:
+        - comments
+      summary: Список комментариев предложения
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Список комментариев.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        "404":
+          description: Предложение не найдено.
+
+  /offers/{offerId}/image:
+    post:
+      tags:
+        - offers
+      summary: Загрузить превью предложения
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Превью загружено.
+        "401":
+          description: Пользователь не авторизован.
+        "403":
+          description: Можно загружать изображение только для своего предложения.
 
   /favorites:
     get:
@@ -223,7 +305,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/offer'
+                  $ref: '#/components/schemas/offerPreview'
         "401":
           description: Пользователь не авторизован.
 
@@ -350,8 +432,6 @@ components:
           type: array
           items:
             type: string
-        hostId:
-          type: string
         location:
           $ref: '#/components/schemas/location'
 
@@ -403,7 +483,7 @@ components:
           type: string
           format: date-time
         city:
-          type: string
+          $ref: '#/components/schemas/city'
         previewImage:
           type: string
         images:
@@ -428,10 +508,70 @@ components:
           type: array
           items:
             type: string
-        hostId:
-          type: string
+        host:
+          $ref: '#/components/schemas/user'
         commentCount:
           type: integer
+        location:
+          $ref: '#/components/schemas/location'
+
+    offerPreview:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        price:
+          type: integer
+        isFavorite:
+          type: boolean
+        publicationDate:
+          type: string
+          format: date-time
+        city:
+          $ref: '#/components/schemas/city'
+        previewImage:
+          type: string
+        isPremium:
+          type: boolean
+        rating:
+          type: number
+        commentCount:
+          type: integer
+
+    createComment:
+      type: object
+      properties:
+        text:
+          type: string
+        rating:
+          type: integer
+        offerId:
+          type: string
+
+    comment:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        rating:
+          type: integer
+        postDate:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/user'
+
+    city:
+      type: object
+      properties:
+        name:
+          type: string
         location:
           $ref: '#/components/schemas/location'
 

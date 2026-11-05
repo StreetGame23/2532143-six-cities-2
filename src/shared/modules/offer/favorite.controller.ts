@@ -13,6 +13,7 @@ import { UserService } from '../user/user-service.interface.js';
 import { OfferService } from './offer-service.interface.js';
 import { fillDTO } from '../../helpers/index.js';
 import { OfferRdo } from './rdo/offer.rdo.js';
+import { OfferPreviewRdo } from './rdo/offer-preview.rdo.js';
 
 @injectable()
 export class FavoriteController extends BaseController {
@@ -58,7 +59,7 @@ export class FavoriteController extends BaseController {
     res: Response,
   ): Promise<void> {
     const offers = await this.userService.findFavorites(tokenPayload.id);
-    const offersRdo = fillDTO(OfferRdo, offers);
+    const offersRdo = fillDTO(OfferPreviewRdo, offers);
     const items = Array.isArray(offersRdo) ? offersRdo : [offersRdo];
 
     for (const offer of items) {

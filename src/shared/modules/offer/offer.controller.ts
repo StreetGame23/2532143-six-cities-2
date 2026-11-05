@@ -1,6 +1,7 @@
 import {
   BaseController,
   DocumentExistsMiddleware,
+  HttpError,
   HttpMethod,
   PrivateRouteMiddleware,
   UploadFileMiddleware,
@@ -12,8 +13,10 @@ import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
 import { OfferService } from './offer-service.interface.js';
+import { StatusCodes } from 'http-status-codes';
 import { fillDTO } from '../../helpers/index.js';
 import { OfferRdo } from './rdo/offer.rdo.js';
+import { OfferPreviewRdo } from './rdo/offer-preview.rdo.js';
 import { CreateOfferRequest } from './create-offer-request.type.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { CommentService } from '../comment/comment-service.interface.js';
@@ -94,6 +97,7 @@ export class OfferController extends BaseController {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'image'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ]
     });
   }
@@ -109,11 +113,34 @@ export class OfferController extends BaseController {
     return new Set(favorites.map((favoriteId) => String(favoriteId)));
   }
 
-  private markFavorites(offers: OfferRdo[] | OfferRdo, favoriteIds: Set<string>): void {
+  private markFavorites(
+    offers: { id: string; isFavorite: boolean }[] | { id: string; isFavorite: boolean },
+    favoriteIds: Set<string>,
+  ): void {
     const items = Array.isArray(offers) ? offers : [offers];
 
     for (const offer of items) {
       offer.isFavorite = favoriteIds.has(offer.id);
+    }
+  }
+
+  private getOfferHostId(offer: { hostId?: unknown }): string {
+    const host = offer.hostId;
+
+    if (host && typeof host === 'object' && 'id' in host) {
+      return String(host.id);
+    }
+
+    return String(host);
+  }
+
+  private assertOfferOwner(offer: { hostId?: unknown } | null, userId: string): void {
+    if (!offer || this.getOfferHostId(offer) !== userId) {
+      throw new HttpError(
+        StatusCodes.FORBIDDEN,
+        'Access denied',
+        'OfferController',
+      );
     }
   }
 
@@ -124,7 +151,7 @@ export class OfferController extends BaseController {
     const count = query.count ? Number.parseInt(String(query.count), 10) : undefined;
     const offers = await this.offerService.find(count);
     const favoriteIds = await this.getFavoriteIds(tokenPayload?.id);
-    const offersRdo = fillDTO(OfferRdo, offers);
+    const offersRdo = fillDTO(OfferPreviewRdo, offers);
     this.markFavorites(offersRdo, favoriteIds);
     this.ok(res, offersRdo);
   }
@@ -150,19 +177,26 @@ export class OfferController extends BaseController {
   }
 
   public async update(
-    { body, params }: Request,
+    { body, params, tokenPayload }: Request,
     res: Response,
   ): Promise<void> {
+    const offer = await this.offerService.findById(params.offerId);
+    this.assertOfferOwner(offer, tokenPayload.id);
     const updatedOffer = await this.offerService.updateById(params.offerId, body);
-    this.ok(res, fillDTO(OfferRdo, updatedOffer));
+    const favoriteIds = await this.getFavoriteIds(tokenPayload.id);
+    const offerRdo = fillDTO(OfferRdo, updatedOffer);
+    this.markFavorites(offerRdo, favoriteIds);
+    this.ok(res, offerRdo);
   }
 
   public async delete(
-    { params }: Request,
+    { params, tokenPayload }: Request,
     res: Response,
   ): Promise<void> {
-    const offer = await this.offerService.deleteById(params.offerId);
-    this.noContent(res, offer);
+    const offer = await this.offerService.findById(params.offerId);
+    this.assertOfferOwner(offer, tokenPayload.id);
+    const deletedOffer = await this.offerService.deleteById(params.offerId);
+    this.noContent(res, deletedOffer);
   }
 
   public async getPremium(
@@ -171,7 +205,7 @@ export class OfferController extends BaseController {
   ): Promise<void> {
     const offers = await this.offerService.findPremiumByCityName(params.city);
     const favoriteIds = await this.getFavoriteIds(tokenPayload?.id);
-    const offersRdo = fillDTO(OfferRdo, offers);
+    const offersRdo = fillDTO(OfferPreviewRdo, offers);
     this.markFavorites(offersRdo, favoriteIds);
     this.ok(res, offersRdo);
   }
@@ -184,8 +218,10 @@ export class OfferController extends BaseController {
     this.ok(res, fillDTO(CommentRdo, comments));
   }
 
-  public async uploadImage({ params, file }: Request, res: Response) {
+  public async uploadImage({ params, file, tokenPayload }: Request, res: Response) {
     const { offerId } = params;
+    const offer = await this.offerService.findById(offerId);
+    this.assertOfferOwner(offer, tokenPayload.id);
     const updateDto = { previewImage: file?.filename };
     await this.offerService.updateById(offerId, updateDto);
     this.created(res, fillDTO(UploadImageRdo, updateDto));
