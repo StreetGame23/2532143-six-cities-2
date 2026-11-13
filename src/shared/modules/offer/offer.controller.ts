@@ -121,9 +121,9 @@ export class OfferController extends BaseController {
   ): void {
     const items = Array.isArray(offers) ? offers : [offers];
 
-    for (const offer of items) {
+    items.forEach((offer) => {
       offer.isFavorite = favoriteIds.has(offer.id);
-    }
+    });
   }
 
   private getOfferHostId(offer: { hostId?: unknown }): string {

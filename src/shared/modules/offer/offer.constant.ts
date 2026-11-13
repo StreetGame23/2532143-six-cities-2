@@ -3,6 +3,19 @@ import { Location } from '../../types/index.js';
 export const DEFAULT_OFFER_COUNT = 60;
 export const DEFAULT_PREMIUM_OFFER_COUNT = 3;
 
+export const MIN_OFFER_TITLE_LENGTH = 10;
+export const MAX_OFFER_TITLE_LENGTH = 100;
+export const MIN_OFFER_DESCRIPTION_LENGTH = 20;
+export const MAX_OFFER_DESCRIPTION_LENGTH = 1024;
+export const OFFER_IMAGES_COUNT = 6;
+export const MIN_OFFER_BEDROOMS = 1;
+export const MAX_OFFER_BEDROOMS = 8;
+export const MIN_OFFER_ADULTS = 1;
+export const MAX_OFFER_ADULTS = 10;
+export const MIN_OFFER_PRICE = 100;
+export const MAX_OFFER_PRICE = 100000;
+export const MIN_OFFER_GOODS_COUNT = 1;
+
 export const CITIES = [
   'Paris',
   'Cologne',

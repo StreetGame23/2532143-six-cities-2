@@ -64,9 +64,9 @@ export class FavoriteController extends BaseController {
     const offersRdo = fillDTO(OfferPreviewRdo, offers);
     const items = Array.isArray(offersRdo) ? offersRdo : [offersRdo];
 
-    for (const offer of items) {
+    items.forEach((offer) => {
       offer.isFavorite = true;
-    }
+    });
 
     this.ok(res, offersRdo);
   }

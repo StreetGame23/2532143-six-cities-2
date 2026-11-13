@@ -18,17 +18,32 @@ import { Type } from 'class-transformer';
 import { OfferType } from '../../../types/index.js';
 import { CreateUpdateOfferMessage } from './update-offer.messages.js';
 import { LocationDto } from './location.dto.js';
-import { CITIES, GOODS, OFFER_TYPES } from '../offer.constant.js';
+import {
+  CITIES,
+  GOODS,
+  MAX_OFFER_ADULTS,
+  MAX_OFFER_BEDROOMS,
+  MAX_OFFER_DESCRIPTION_LENGTH,
+  MAX_OFFER_PRICE,
+  MAX_OFFER_TITLE_LENGTH,
+  MIN_OFFER_ADULTS,
+  MIN_OFFER_BEDROOMS,
+  MIN_OFFER_DESCRIPTION_LENGTH,
+  MIN_OFFER_PRICE,
+  MIN_OFFER_TITLE_LENGTH,
+  OFFER_IMAGES_COUNT,
+  OFFER_TYPES,
+} from '../offer.constant.js';
 
 export class UpdateOfferDto {
   @IsOptional()
-  @MinLength(10, { message: CreateUpdateOfferMessage.title.minLength })
-  @MaxLength(100, { message: CreateUpdateOfferMessage.title.maxLength })
+  @MinLength(MIN_OFFER_TITLE_LENGTH, { message: CreateUpdateOfferMessage.title.minLength })
+  @MaxLength(MAX_OFFER_TITLE_LENGTH, { message: CreateUpdateOfferMessage.title.maxLength })
   public title?: string;
 
   @IsOptional()
-  @MinLength(20, { message: CreateUpdateOfferMessage.description.minLength })
-  @MaxLength(1024, { message: CreateUpdateOfferMessage.description.maxLength })
+  @MinLength(MIN_OFFER_DESCRIPTION_LENGTH, { message: CreateUpdateOfferMessage.description.minLength })
+  @MaxLength(MAX_OFFER_DESCRIPTION_LENGTH, { message: CreateUpdateOfferMessage.description.maxLength })
   public description?: string;
 
   @IsOptional()
@@ -46,8 +61,8 @@ export class UpdateOfferDto {
   @IsOptional()
   @IsArray({ message: CreateUpdateOfferMessage.images.invalidFormat })
   @IsString({ each: true })
-  @ArrayMinSize(6, { message: CreateUpdateOfferMessage.images.length })
-  @ArrayMaxSize(6, { message: CreateUpdateOfferMessage.images.length })
+  @ArrayMinSize(OFFER_IMAGES_COUNT, { message: CreateUpdateOfferMessage.images.length })
+  @ArrayMaxSize(OFFER_IMAGES_COUNT, { message: CreateUpdateOfferMessage.images.length })
   public images?: string[];
 
   @IsOptional()
@@ -60,20 +75,20 @@ export class UpdateOfferDto {
 
   @IsOptional()
   @IsInt({ message: CreateUpdateOfferMessage.bedrooms.invalidFormat })
-  @Min(1, { message: CreateUpdateOfferMessage.bedrooms.min })
-  @Max(8, { message: CreateUpdateOfferMessage.bedrooms.max })
+  @Min(MIN_OFFER_BEDROOMS, { message: CreateUpdateOfferMessage.bedrooms.min })
+  @Max(MAX_OFFER_BEDROOMS, { message: CreateUpdateOfferMessage.bedrooms.max })
   public bedrooms?: number;
 
   @IsOptional()
   @IsInt({ message: CreateUpdateOfferMessage.maxAdults.invalidFormat })
-  @Min(1, { message: CreateUpdateOfferMessage.maxAdults.min })
-  @Max(10, { message: CreateUpdateOfferMessage.maxAdults.max })
+  @Min(MIN_OFFER_ADULTS, { message: CreateUpdateOfferMessage.maxAdults.min })
+  @Max(MAX_OFFER_ADULTS, { message: CreateUpdateOfferMessage.maxAdults.max })
   public maxAdults?: number;
 
   @IsOptional()
   @IsInt({ message: CreateUpdateOfferMessage.price.invalidFormat })
-  @Min(100, { message: CreateUpdateOfferMessage.price.min })
-  @Max(100000, { message: CreateUpdateOfferMessage.price.max })
+  @Min(MIN_OFFER_PRICE, { message: CreateUpdateOfferMessage.price.min })
+  @Max(MAX_OFFER_PRICE, { message: CreateUpdateOfferMessage.price.max })
   public price?: number;
 
   @IsOptional()

@@ -1,10 +1,10 @@
+import { randomBytes } from 'node:crypto';
 import { createOffer, getErrorMessage, getMongoURI } from '../../shared/helpers/index.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/tsv-file-reader.js';
 import { Command } from './command.interface.js';
 import { DatabaseClient, MongoDatabaseClient } from '../../shared/libs/database-client/index.js';
 import { ConsoleLogger, Logger } from '../../shared/libs/logger/index.js';
 import {
-  DEFAULT_USER_PASSWORD,
   DefaultUserService,
   UserModel,
   UserService,
@@ -18,6 +18,7 @@ import { CommentModel } from '../../shared/modules/comment/index.js';
 import { Offer } from '../../shared/types/index.js';
 
 const DEFAULT_DB_PORT = '27017';
+const IMPORTED_USER_PASSWORD_BYTES = 6;
 
 export class ImportCommand implements Command {
   private readonly logger: Logger;
@@ -52,7 +53,7 @@ export class ImportCommand implements Command {
       name: offer.host.name,
       avatarUrl: offer.host.avatarUrl,
       isPro: offer.host.isPro,
-      password: DEFAULT_USER_PASSWORD,
+      password: randomBytes(IMPORTED_USER_PASSWORD_BYTES).toString('hex'),
     }, this.salt);
 
     await this.offerService.create({
